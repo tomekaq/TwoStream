@@ -22,21 +22,24 @@ namespace UsingTwoStream
                 {
                     using (BCRandomStream rndstream = new BCRandomStream(range))
                     {
-                        HashSet<int> listFile1 = new HashSet<int>();
+                        List<int> listFile = new List<int>();
 
                         HashSet<int> hashSet = new HashSet<int>();
 
-                        char[] sep = new char[]{ '\r', '\n' };
+                        char[] sep = new char[] { '\r', '\n' };
+
                         readStream.ReadToEnd()
                             .Split(sep, StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => int.Parse(x))
                             .ToList()
-                            .ForEach(x=>hashSet.Add(x));
+                            .ForEach(x => hashSet.Add(x));
+                        
+                        List<int> listad = Enumerable.Range(0, 10)
+                            .Select(x => rndstream.Read()).ToList()
+                            .Select(x => x)
+                            .Where(x => hashSet.Contains(x)).ToList();
 
-                      
-
-
-                        rndstream.Close();  
+                        rndstream.Close();
                     }
                     readStream.Close();
                 }
