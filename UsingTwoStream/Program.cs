@@ -35,7 +35,7 @@ namespace UsingTwoStream
                             .ForEach(x => hashSet.Add(x));
                         
                         List<int> listad = Enumerable.Range(0, 10)
-                            .Select(x => rndstream.Read()).ToList()
+                            .Select(x => rndstream.Read())
                             .Select(x => x)
                             .Where(x => hashSet.Contains(x)).ToList();
 
