@@ -35,14 +35,30 @@ namespace UsingTwoStream
                         var ReadList = readStream.ReadToEnd()
                             .Split(sep, StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => int.Parse(x))
-                            .OrderBy(x => x).ToList();
+                            .OrderBy(x => x);
 
                         var GenerList = RandomSource(rndstream).Take(ReadList.Count())
-                            .OrderBy(x => x).ToArray();
+                            .OrderBy(x => x);
 
-                        //linq porównaj i zwróć
-                        var lastList = ReadList.Intersect(GenerList).ToList();
                         
+                        //linq porównaj i zwróć
+                        
+                        var lastList = ReadList.Intersect(GenerList).ToList();
+
+                        var lastL = from read in ReadList
+                                    join gen in GenerList
+                                    on read equals gen into t
+                                    select new { t};
+                        
+                        lastL
+                        .Select(x =>
+                        {
+                            Console.WriteLine("{0}", x);
+                            return x;
+                        })
+                        .ToList();
+
+
                         lastList
                         .Select(x =>
                         {
