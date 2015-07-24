@@ -15,6 +15,7 @@ namespace UsingTwoStream
         static void Main(string[] args)
         {
             var path = @"C:\Users\user\Documents\Zapis.txt";
+            Console.WriteLine("Podaj maksymalna wartosc");
             var range = int.Parse(Console.ReadLine());
             using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
@@ -26,18 +27,24 @@ namespace UsingTwoStream
 
                         HashSet<int> hashSet = new HashSet<int>();
 
+                        HashSet<int> hashSet2 = new HashSet<int>();
                         char[] sep = new char[] { '\r', '\n' };
 
-                        readStream.ReadToEnd()
+                        List<int> ReadList = readStream.ReadToEnd()
                             .Split(sep, StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => int.Parse(x))
-                            .ToList()
-                            .ForEach(x => hashSet.Add(x));
+                            .ToList();
                         
-                        List<int> listad = Enumerable.Range(0, 10)
+                        ReadList.ForEach(x => hashSet.Add(x));
+
+                        Enumerable.Range(0, ReadList.Count)
                             .Select(x => rndstream.Read())
-                            .Select(x => x)
-                            .Where(x => hashSet.Contains(x)).ToList();
+                            .Where(x => hashSet.Contains(x))
+                            .ToList()
+                            .ForEach(x =>hashSet2.Add(x));
+
+                        foreach (var t in hashSet2)
+                            Console.WriteLine(t);
 
                         rndstream.Close();
                     }
