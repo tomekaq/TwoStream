@@ -43,25 +43,21 @@ namespace UsingTwoStream
                         var GenerList = RandomSource(rndstream)
                             .Take(ReadList.Count())
                             .OrderBy(y => y)
-                            .Select(y=> { j++; return new { y, j }; })
+                            .Select(y => { j++; return new { y, j }; })
                             .ToList();
 
                         //var lastList = ReadList.Intersect(GenerList).ToList();
 
-                        var result =
-                            from val in ReadList
-                            join gen in GenerList
-                            on val.x equals gen.y into t
-                            from rt in t.DefaultIfEmpty()
-                            group t by new { val.x,val.i } into grouped
-                            select new { key = grouped.Key, amount = grouped.Count()};
 
-                        //var tt =  result.GroupBy(x => x.key.x);
+                        var bcres = ReadList.Join(GenerList, rl => rl.x, gl => gl.y, (rl, gl) => new { rl, gl });
+                        var bcr2 = bcres.GroupBy(res => res.rl);
+                        var bcr3 = bcr2.GroupBy(res => res.Key.x);
 
+                        var bcfinal = bcr3.Select(res => new { k= res.Key, val=Math.Min(res.Count(), res.Max(l => l.Count())) });
+                        
+                        var groupsY = bcr3.Select(g => g.Count());
+                        var groupsX = bcr3.Select(g => g.Max(l => l.Count()));
 
-                        result
-                            .Select(x => { var v = Math.Min(x.key.x, x.amount); return x; })
-                            .Select(x => { Console.WriteLine(x); return x; }).ToList();
 
 
                         rndstream.Close();
