@@ -31,41 +31,38 @@ namespace UsingTwoStream
                     using (BCRandomStream rndstream = new BCRandomStream(range))
                     {
                         char[] sep = new char[] { '\r', '\n' };
-
+                        int i = -1;
                         var ReadList = readStream.ReadToEnd()
                             .Split(sep, StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => int.Parse(x))
-                            .OrderBy(x => x);
+                            .OrderBy(x => x)
+                            .Select(x => { i++; return new { x, i }; })
+                            .ToList();
 
-                        var GenerList = RandomSource(rndstream).Take(ReadList.Count())
-                            .OrderBy(x => x);
+                        int j = -1;
+                        var GenerList = RandomSource(rndstream)
+                            .Take(ReadList.Count())
+                            .OrderBy(y => y)
+                            .Select(y=> { j++; return new { y, j }; })
+                            .ToList();
 
-                        
-                        //linq porównaj i zwróć
-                        
-                        var lastList = ReadList.Intersect(GenerList).ToList();
+                        //var lastList = ReadList.Intersect(GenerList).ToList();
 
-                        var lastL = from read in ReadList
-                                    join gen in GenerList
-                                    on read equals gen into t
-                                    select new { t};
-                        
-                        lastL
-                        .Select(x =>
-                        {
-                            Console.WriteLine("{0}", x);
-                            return x;
-                        })
-                        .ToList();
+                        var result =
+                            from val in ReadList
+                            join gen in GenerList
+                            on val.x equals gen.y into t
+                            from rt in t.DefaultIfEmpty()
+                            group t by new { val.x,val.i } into grouped
+                            select new { key = grouped.Key, amount = grouped.Count()};
+
+                        //var tt =  result.GroupBy(x => x.key.x);
 
 
-                        lastList
-                        .Select(x =>
-                        {
-                            Console.WriteLine("{0}", x);
-                            return x;
-                        })
-                        .ToList();
+                        result
+                            .Select(x => { var v = Math.Min(x.key.x, x.amount); return x; })
+                            .Select(x => { Console.WriteLine(x); return x; }).ToList();
+
 
                         rndstream.Close();
                     }
