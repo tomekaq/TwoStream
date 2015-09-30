@@ -59,7 +59,6 @@ namespace UsingTwoStream
                         var groupsX = bcr3.Select(g => g.Max(l => l.Count()));
 
 
-
                         rndstream.Close();
                     }
                     readStream.Close();
